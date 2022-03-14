@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rksi_schedule/resourses/app_colors.dart';
 import 'package:rksi_schedule/screen_main/model/schedule_model.dart';
-import 'package:rksi_schedule/screen_main/provider/screen_provider.dart';
 import 'package:rksi_schedule/screen_main/schedule/schedule.dart';
 import 'package:rksi_schedule/screen_main/search/network_search_groups.dart';
 
@@ -17,8 +17,8 @@ class ScheduleMain extends StatefulWidget {
 class _ScheduleMainState extends State<ScheduleMain> {
   @override
   Widget build(BuildContext context) {
-    return ScheduleProvider(
-      model: ScheduleModel(),
+    return ChangeNotifierProvider(
+      create: (context) => ScheduleModel(),
       child: Scaffold(
         appBar: AppBar(
           title: const GroupTitle(),
@@ -41,8 +41,9 @@ class IndicatorRef extends StatelessWidget {
   const IndicatorRef({Key? key}) : super(key: key);
 
   Future<void> getGroup(BuildContext context) async {
-    await ScheduleProvider.depend(context)
-        ?.getGroup(ScheduleProvider.get(context)!.resultGroup);
+    await context
+        .watch<ScheduleModel>()
+        .getGroup(context.read<ScheduleModel>().resultGroup);
   }
 
   @override
@@ -62,7 +63,7 @@ class GroupTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      ScheduleProvider.depend(context)!.groupName,
+      context.watch<ScheduleModel>().groupName,
     );
   }
 }
@@ -85,7 +86,7 @@ class _SearchActionState extends State<SearchAction> {
             delegate: NetworkSearchGroups(),
           );
           if (result != "") {
-            ScheduleProvider.get(context)?.getGroup(result!);
+            context.read<ScheduleModel>().getGroup(result!);
           }
         },
         icon: const Icon(Icons.search),
@@ -108,7 +109,7 @@ class _ScheduleBodyState extends State<ScheduleBody> {
       cacheExtent: 100000,
       padding: const EdgeInsets.only(top: 5),
       physics: const BouncingScrollPhysics(),
-      itemCount: ScheduleProvider.depend(context)?.group.length ?? 0,
+      itemCount: context.watch<ScheduleModel>().group.length,
       itemBuilder: (context, index) {
         return Group(
           index: index,
@@ -128,7 +129,7 @@ class Group extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final group = ScheduleProvider.get(context)!.group[index];
+    final group = context.read<ScheduleModel>().group[index];
     final groupDate = DateTime.parse(group.date);
 
     final today = DateTime.now();
