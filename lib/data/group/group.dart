@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:rksi_schedule/screen_main/schedule/schedule.dart';
+import 'package:rksi_schedule/data/schedule/schedule.dart';
 part 'group.g.dart';
 
 @HiveType(typeId: 1)

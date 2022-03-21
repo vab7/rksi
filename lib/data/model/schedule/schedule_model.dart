@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:rksi_schedule/screen_main/api/groups_and_teachers_api.dart';
-import 'package:rksi_schedule/screen_main/group/group.dart';
-import 'package:rksi_schedule/screen_main/schedule/schedule.dart';
+import 'package:rksi_schedule/data/api/api.dart';
+import 'package:rksi_schedule/data/group/group.dart';
 
 class ScheduleModel extends ChangeNotifier {
   String? _resultGroup;
@@ -20,19 +19,13 @@ class ScheduleModel extends ChangeNotifier {
   Future<void> getGroup(String index) async {
     _resultGroup = index;
 
-    final groupName = index.split('#');
-
-    _groupName = groupName[0];
-
-    final int result = int.parse(groupName[1]);
-
-    GroupsAndTeachersApi.internet().then((connection) async {
+    Api.internet().then((connection) async {
       if (connection) {
         _group.clear();
 
         notifyListeners();
 
-        _group = await GroupsAndTeachersApi.getGroup(result);
+        _group = await Api.getGroup(int.parse(index));
 
         notifyListeners();
 
@@ -42,9 +35,6 @@ class ScheduleModel extends ChangeNotifier {
   }
 
   void saveGroup() async {
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GroupAdapter());
-    if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(ScheduleAdapter());
-
     final boxGroup = await Hive.openBox<List<dynamic>>('group_box');
     boxGroup.put('group', _group);
 
@@ -56,8 +46,6 @@ class ScheduleModel extends ChangeNotifier {
   }
 
   void _registerAdapter() async {
-    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(GroupAdapter());
-    if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(ScheduleAdapter());
     final boxGroupName = await Hive.openBox<String>('groupName_box');
     final boxIndexGroup = await Hive.openBox<String>('indexGroup_box');
     final boxGroup = await Hive.openBox<List<dynamic>>('group_box');
@@ -72,7 +60,7 @@ class ScheduleModel extends ChangeNotifier {
       readGroupFromHive();
       boxGroup.listenable().addListener(readGroupFromHive);
     } else {
-      final groupName = await GroupsAndTeachersApi.getFirstGroup();
+      final groupName = await Api.getFirstGroup();
       getGroup(groupName);
     }
 

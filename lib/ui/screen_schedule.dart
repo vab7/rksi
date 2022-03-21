@@ -3,25 +3,27 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rksi_schedule/resourses/app_colors.dart';
-import 'package:rksi_schedule/screen_main/model/schedule_model.dart';
-import 'package:rksi_schedule/screen_main/schedule/schedule.dart';
-import 'package:rksi_schedule/screen_main/search/network_search_groups.dart';
+import 'package:rksi_schedule/data/model/schedule/schedule_model.dart';
+import 'package:rksi_schedule/data/schedule/schedule.dart';
 
-class ScheduleMain extends StatefulWidget {
-  const ScheduleMain({Key? key}) : super(key: key);
+import 'group_name/group_name.dart';
+import 'search/search_action.dart';
+
+class ScheduleScreen extends StatefulWidget {
+  const ScheduleScreen({Key? key}) : super(key: key);
 
   @override
-  State<ScheduleMain> createState() => _ScheduleMainState();
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
-class _ScheduleMainState extends State<ScheduleMain> {
+class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ScheduleModel(),
       child: Scaffold(
         appBar: AppBar(
-          title: const GroupTitle(),
+          title: const GroupName(),
           centerTitle: true,
           actions: const [
             SearchAction(),
@@ -49,49 +51,11 @@ class IndicatorRef extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      color: AppColors.primary,
+      color: primary,
       displacement: 50,
       onRefresh: () => getGroup(context),
       child: const ScheduleBody(),
     );
-  }
-}
-
-class GroupTitle extends StatelessWidget {
-  const GroupTitle({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      context.watch<ScheduleModel>().groupName,
-    );
-  }
-}
-
-class SearchAction extends StatefulWidget {
-  const SearchAction({Key? key}) : super(key: key);
-
-  @override
-  State<SearchAction> createState() => _SearchActionState();
-}
-
-class _SearchActionState extends State<SearchAction> {
-  @override
-  Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      return IconButton(
-        onPressed: () async {
-          final result = await showSearch(
-            context: context,
-            delegate: NetworkSearchGroups(),
-          );
-          if (result != "") {
-            context.read<ScheduleModel>().getGroup(result!);
-          }
-        },
-        icon: const Icon(Icons.search),
-      );
-    });
   }
 }
 
@@ -206,7 +170,7 @@ class Group extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(7),
-              color: AppColors.primary,
+              color: primary,
             ),
           ),
         ),
@@ -270,11 +234,11 @@ class _ScheduleTState extends State<ScheduleT> {
         DateTime.parse('${widget.schedule.date} ${widget.schedule.end}');
 
     if (dateNow.isAfter(startTime) && dateNow.isBefore(endTime)) {
-      _colorLinearGradient = AppColors.secondaryText;
+      _colorLinearGradient = secondaryText;
     } else if (dateNow.isAfter(endTime)) {
-      _colorLinearGradient = AppColors.end;
+      _colorLinearGradient = end;
     } else {
-      _colorLinearGradient = AppColors.primary;
+      _colorLinearGradient = primary;
     }
 
     setState(() {
@@ -302,13 +266,13 @@ class _ScheduleTState extends State<ScheduleT> {
             timer();
           });
         } else {
-          _colorLinearGradient = AppColors.primary;
+          _colorLinearGradient = primary;
         }
       } else {
-        _colorLinearGradient = AppColors.end;
+        _colorLinearGradient = end;
       }
     } else {
-      _colorLinearGradient = AppColors.end;
+      _colorLinearGradient = end;
     }
   }
 
@@ -346,7 +310,7 @@ class _ScheduleTState extends State<ScheduleT> {
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            border: Border.all(color: AppColors.thirdText),
+            border: Border.all(color: thirdText),
             borderRadius: const BorderRadius.only(
               topRight: Radius.circular(5.0),
               bottomRight: Radius.circular(5.0),
@@ -370,7 +334,7 @@ class _ScheduleTState extends State<ScheduleT> {
                         maxLines: 2,
                         style: const TextStyle(
                           height: 1,
-                          color: AppColors.primaryText,
+                          color: primaryText,
                           fontWeight: FontWeight.w500,
                           fontSize: 22,
                         ),
@@ -383,7 +347,7 @@ class _ScheduleTState extends State<ScheduleT> {
                         widget.schedule.teacher,
                         maxLines: 2,
                         style: const TextStyle(
-                          color: AppColors.primaryText,
+                          color: primaryText,
                           fontSize: 14,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -395,7 +359,7 @@ class _ScheduleTState extends State<ScheduleT> {
                         'Кабинет ${widget.schedule.door}',
                         maxLines: 2,
                         style: const TextStyle(
-                          color: AppColors.primaryText,
+                          color: primaryText,
                           fontSize: 14,
                         ),
                         overflow: TextOverflow.ellipsis,

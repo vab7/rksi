@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:rksi_schedule/screen_main/group/group.dart';
+import 'package:rksi_schedule/data/group/group.dart';
 
-class GroupsAndTeachersApi {
+class Api {
   static int? groupsLength;
 
   static void _saveGroupsLength(int groupsLength) async {
